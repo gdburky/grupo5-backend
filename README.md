@@ -2,7 +2,7 @@
 Python 3.7.0
 Pip 10.0.1
 ### Virtual enviroment
-Create the virtual environment inside project folder. 
+Create the virtual environment inside project folder.
 ```
 pyvenv venv
 ```
@@ -10,7 +10,7 @@ Call it venv or env. If you call it other way, add it to the git ignore file.
 ```
 echo 'name/' > .gitignore
 ```
-To activate 
+To activate
 ```
 source venv/bin/activate
 ```
