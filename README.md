@@ -1,6 +1,6 @@
 # Grupo 5 - Backend- API REST
 Python 3.7.0
-pip 10.0.1
+Pip 10.0.1
 ### Virtual enviroment
 Create the virtual environment inside project folder. 
 ```
