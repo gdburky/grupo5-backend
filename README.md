@@ -29,7 +29,7 @@ If you install new libraries add it to requirements
 pip freeze > requirements.txt
 ```
 
-### Run the example
+### Run
 ```
 python app.py
 ```
