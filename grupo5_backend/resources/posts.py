@@ -1,6 +1,6 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify, make_response
 from flask_restful import Resource, Api
-
+from resources import test_responses
 import requests
 
 API_PATH = 'charette15.ing.puc.cl'
@@ -9,7 +9,8 @@ class PostCollection(Resource):
     API_PATH_POSTCOLLECTION = API_PATH + '{}'.format('/posts')
 
     def get(self):
-        return requests.get(self.API_PATH_POSTCOLLECTION)
+        # return requests.get(self.API_PATH_POSTCOLLECTION)
+        return make_response(jsonify(test_responses.post_get), 200)
 
     def post(self):
         context = {}
