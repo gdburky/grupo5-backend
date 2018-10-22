@@ -1,4 +1,4 @@
-from flask import Blueprint, abort
+from flask import Blueprint, abort, request
 from flask_restful import Resource, Api
 
 import requests
@@ -21,6 +21,12 @@ class Message(Resource):
 
     def get(self, id_):
         resp = requests.get(self.API_PATH_M.format(id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+    def delete(self, id_):
+        resp = requests.delete(self.API_PATH_M.format(id_))
         if resp.status_code == 200:
             return resp.text
         else:
@@ -61,5 +67,6 @@ messages_api = Blueprint('resources.messages', __name__)
 
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
+api.add_resource(Message, '/messages/<int:id_>')
 api.add_resource(MessagesResponsesCollection, '/messages/<int:id_>/responses')
 api.add_resource(MessagesHashtagCollection, '/messages/filter/<string:hashtag>')

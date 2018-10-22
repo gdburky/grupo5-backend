@@ -1,4 +1,4 @@
-from flask import Blueprint, abort
+from flask import Blueprint, abort, request
 from flask_restful import Resource, Api
 
 import requests
@@ -30,6 +30,13 @@ class Post(Resource):
     def get(self, id_):
         resp = requests..get(self.API_PATH_P.format(id_))
         if resp..status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+    
+    def delete(self, id_):
+        resp = requests.delete(self.API_PATH_P.format(id_))
+        if resp.status_code == 200:
             return resp.text
         else:
             abort(resp.status_code)
@@ -79,6 +86,7 @@ posts_api = Blueprint('resources.posts', __name__)
 
 api = Api(posts_api)
 api.add_resource(PostCollection, '/posts')
+api.add_resource(Post, '/posts/<int:id_>')
 api.add_resource(PostMessagesCollection, '/posts/<int:id_>/messages')
 api.add_resource(PostSubscriptionCollection, '/posts/<int:id_>/subscriptions')
 api.add_resource(PostHashtagCollection, '/posts/filter/<string:hashtag>')
