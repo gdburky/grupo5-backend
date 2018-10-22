@@ -16,6 +16,16 @@ class MessagesCollection(Resource):
         else:
             abort(resp.status_code)
 
+class Message(Resource):
+    API_PATH_M = API_PATH + '{}'.format('/messages/{}')
+
+    def get(self, id_):
+        resp = requests.get(self.API_PATH_M.format(id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
 
 class MessagesResponsesCollection(Resource):
     API_PATH_MRC = API_PATH + '{}'.format('/messages/{}/responses')
@@ -23,6 +33,14 @@ class MessagesResponsesCollection(Resource):
     def get(self, id_):
         resp = requests.get(self.API_PATH_MRC.format(id_))
         if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
+    def post(self, id_):
+        args = request.form
+        resp = requests.post(self.API_PATH_MRC.format(id_), data=args)
+        if resp.status_code == 201:
             return resp.text
         else:
             abort(resp.status_code)

@@ -16,6 +16,16 @@ class ResponseCollection(Resource):
         else: 
             abort(resp.status_code)
 
+class Response(Resource):
+    API_PATH_R = API_PATH + '{}'.format('/responses/{}')
+
+    def get(self, id_):
+        resp = requests.get(self.API_PATH_R.format(id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
 
 responses_api = Blueprint('resources.responses', __name__)
 

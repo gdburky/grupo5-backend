@@ -15,7 +15,24 @@ class PostCollection(Resource):
             return resp.text
         else:
             abort(resp.status_code)
+    
+    def post(self):
+        args = request.form
+        resp = requests.post(self.API_PATH_PC, data=args)
+        if resp.status_code == 201:
+            return resp.text
+        else:
+            abort(resp.status_code)
 
+class Post(Resource):
+    API_PATH_P = API_PATH + '{}'.format('/posts/{}')
+
+    def get(self, id_):
+        resp = requests..get(self.API_PATH_P.format(id_))
+        if resp..status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
 
 class PostMessagesCollection(Resource):
     API_PATH_PMC = API_PATH + '{}'.format('/posts/{}/messages')
@@ -27,6 +44,13 @@ class PostMessagesCollection(Resource):
         else:
             abort(resp.status_code)
 
+    def post(self, id_):
+        args = request.form
+        resp = requests.post(self.API_PATH_PMC.format(id_), data=args)
+        if resp.status_code == 201:
+            return resp.text
+        else:
+            abort(resp.status_code)
 
 
 class PostSubscriptionCollection(Resource):
