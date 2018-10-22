@@ -13,7 +13,7 @@ class MessagesCollection(Resource):
         resp = requests.get(self.API_PATH_MC)
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -24,7 +24,7 @@ class MessagesResponsesCollection(Resource):
         resp = requests.get(self.API_PATH_MRC.format(id_))
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -35,7 +35,7 @@ class MessagesHashtagCollection(Resource):
         resp = requests.get(self.API_PATH_MHC.format(hashtag))
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -44,4 +44,4 @@ messages_api = Blueprint('resources.messages', __name__)
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
 api.add_resource(MessagesResponsesCollection, '/messages/<int:id_>/responses')
-api.add_resource(MessagesHashtagCollection, '/messages/filter/<str:hashtag>')
+api.add_resource(MessagesHashtagCollection, '/messages/filter/<string:hashtag>')

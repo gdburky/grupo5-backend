@@ -13,7 +13,7 @@ class PostCollection(Resource):
         resp = requests.get(self.API_PATH_PC)
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -24,7 +24,7 @@ class PostMessagesCollection(Resource):
         resp = requests.get(self.API_PATH_PMC.format(id_))
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -36,7 +36,7 @@ class PostSubscriptionCollection(Resource):
         resp = requests.get(self.API_PATH_PSC.format(id_))
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -47,7 +47,7 @@ class PostHashtagCollection(Resource):
         resp = requests.get(self.API_PATH_PHC.format(hashtag))
         if resp.status_code == 200:
             return resp.text
-        else: 
+        else:
             abort(resp.status_code)
 
 
@@ -57,4 +57,4 @@ api = Api(posts_api)
 api.add_resource(PostCollection, '/posts')
 api.add_resource(PostMessagesCollection, '/posts/<int:id_>/messages')
 api.add_resource(PostSubscriptionCollection, '/posts/<int:id_>/subscriptions')
-api.add_resource(PostHashtagCollection, '/posts/filter/<str:hashtag>')
+api.add_resource(PostHashtagCollection, '/posts/filter/<string:hashtag>')
