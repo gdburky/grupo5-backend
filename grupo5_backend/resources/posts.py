@@ -17,8 +17,8 @@ class PostCollection(Resource):
             abort(resp.status_code)
 
 class Post(Resource):
-    API_PATH_P = API_PATH + '{}{}'.format('/services/{}/posts/{}')
-    API_PATH_P_CREATE = API_PATH + '{}{}'.format('/services/{}/posts/author/{}')
+    API_PATH_P = API_PATH + '{}'.format('/services/{}/posts/{}')
+    API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts/author/{}')
 
     def post(self, apiKey, id_):
         args = request.form
@@ -50,7 +50,7 @@ class Post(Resource):
             abort(resp.status_code)  
 
 class PostMessagesCollection(Resource):
-    API_PATH_PMC = API_PATH + '{}{}'.format('/services/{}/posts/{}/messages')
+    API_PATH_PMC = API_PATH + '{}'.format('/services/{}/posts/{}/messages')
 
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PMC.format(apiKey, id_))
@@ -60,7 +60,7 @@ class PostMessagesCollection(Resource):
             abort(resp.status_code)
 
 class PostSubscriptionCollection(Resource):
-    API_PATH_PSC = API_PATH + '{}{}'.format('/services/{}/posts/{}/subscriptions')
+    API_PATH_PSC = API_PATH + '{}'.format('/services/{}/posts/{}/subscriptions')
 
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
@@ -71,7 +71,7 @@ class PostSubscriptionCollection(Resource):
 
 
 class PostHashtagCollection(Resource):
-    API_PATH_PHC = API_PATH + '{}{}'.format('/services/{}/posts/filter/{}')
+    API_PATH_PHC = API_PATH + '{}'.format('/services/{}/posts/filter/{}')
 
     def get(self, apiKey, hashtag):
         resp = requests.get(self.API_PATH_PHC.format(apiKey, hashtag))

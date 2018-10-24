@@ -50,7 +50,7 @@ class PersonChangePassword(Resource):
             abort(resp.status_code)
 
 class Person(Resource):
-    API_PATH_P = API_PATH + '{}{}'.format('/services/{}/people/{}')
+    API_PATH_P = API_PATH + '{}'.format('/services/{}/people/{}')
 
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_P.format(apiKey, id_))
@@ -147,7 +147,7 @@ class PersonResponseCollection(Resource):
             abort(resp.status_code)
 
 class PersonSubscriptionCollection(Resource):
-    API_PATH_PSC = API_PATH + '{}{}'.format('/services/{}/people/{}/subscriptions')
+    API_PATH_PSC = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions')
 
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
@@ -157,7 +157,7 @@ class PersonSubscriptionCollection(Resource):
             abort(resp.status_code)
 
 class PersonSubscribePost(Resource):
-    API_PATH_PSP = API_PATH + '{}{}{}'.format('/services/{}/people/{}/subscriptions/posts/{}')
+    API_PATH_PSP = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions/posts/{}')
 
     def post(self, apiKey, id_, postId):
         args = request.form

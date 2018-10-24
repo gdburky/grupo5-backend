@@ -17,8 +17,8 @@ class MessagesCollection(Resource):
             abort(resp.status_code)
 
 class Message(Resource):
-    API_PATH_M = API_PATH + '{}{}{}'.format('/services/{}/posts/{}/messages/{}')
-    API_PATH_M_CREATE = API_PATH + '{}{}{}'.format('/services/{}/posts/{}/messages/author/{}')
+    API_PATH_M = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}')
+    API_PATH_M_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages/author/{}')
 
     def post(self, apiKey, postId, id_):
         args = request.form
@@ -44,7 +44,7 @@ class Message(Resource):
 
 
 class MessagesResponsesCollection(Resource):
-    API_PATH_MRC = API_PATH + '{}{}{}'.format('/services/{}/posts/{}/messages/{}/responses')
+    API_PATH_MRC = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses')
 
     def get(self, apiKey, postId, id_):
         resp = requests.get(self.API_PATH_MRC.format(apiKey, postId, id_))
@@ -54,10 +54,10 @@ class MessagesResponsesCollection(Resource):
             abort(resp.status_code)
 
 class MessagesHashtagCollection(Resource):
-    API_PATH_MHC = API_PATH + '{}'.format('messages/filter/{}')
+    API_PATH_MHC = API_PATH + '{}'.format('/services/{}/posts/{}/messages/filter/{}')
 
-    def get(self, hashtag):
-        resp = requests.get(self.API_PATH_MHC.format(hashtag))
+    def get(self, apiKey, postId, hashtag):
+        resp = requests.get(self.API_PATH_MHC.format(apiKey, postId, hashtag))
         if resp.status_code == 200:
             return resp.text
         else:
@@ -68,7 +68,7 @@ messages_api = Blueprint('resources.messages', __name__)
 
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
-api.add_resource(Message, '/messages/<int:id_>')
+api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>')
 api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/author/<int:id_>')
 api.add_resource(MessagesResponsesCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>/responses')
-api.add_resource(MessagesHashtagCollection, '/messages/filter/<string:hashtag>')
+api.add_resource(MessagesHashtagCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/filter/<string:hashtag>')
