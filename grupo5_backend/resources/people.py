@@ -49,6 +49,49 @@ class PersonChangePassword(Resource):
         else:
             abort(resp.status_code)
 
+class Person(Resource):
+    API_PATH_P = API_PATH + '{}{}'.format('/services/{}/people/{}')
+
+    def get(self, apiKey, id_):
+        resp = requests.get(self.API_PATH_P.format(apiKey, id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
+    def put(self, apiKey, id_):
+        resp = requests.put(self.API_PATH_P.format(apiKey, id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
+    def delete(self, apiKey, id_):
+        resp = requests.delete(self.API_PATH_P.format(apiKey, id_))
+        if resp.status_code == 204:
+            return resp.text
+        else:
+            abort(resp.status_code)   
+
+class PersonCollection(Resource):
+    API_PATH_PC = API_PATH + '{}'.format('/services/{}/people')
+
+    def get(self, id_):
+        resp = requests.get(self.API_PATH_PC.format(id_))
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
+    #este es para crear personas pero usa el mismo path PC...    
+    def post(self, id_):
+        args = request.form
+        resp = requests.post(self.API_PATH_PC.format(id_), data=args)
+        if resp.status_code == 200:
+            return resp.text
+        else:
+            abort(resp.status_code)
+
 class PersonPostCollection(Resource):
     API_PATH_PPC = API_PATH + '{}'.format('/people/{}/posts')
 
@@ -59,7 +102,7 @@ class PersonPostCollection(Resource):
         else:
             abort(resp.status_code)
 
-    def post(self):
+    def post(self, id_):
         args = request.form
         resp = requests.post(self.API_PATH_PPC.format(id_), data=args)
         if resp.status_code == 200:
@@ -104,26 +147,22 @@ class PersonResponseCollection(Resource):
             abort(resp.status_code)
 
 class PersonSubscriptionCollection(Resource):
-    API_PATH_PSC = API_PATH + '{}'.format('/people/{}/subscriptions')
+    API_PATH_PSC = API_PATH + '{}{}'.format('/services/{}/people/{}/subscriptions')
 
-    def get(self, id_):
-        resp = requests.get(self.API_PATH_PSC.format(id_))
+    def get(self, apiKey, id_):
+        resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
         if resp.status_code == 200:
             return resp.text
         else:
             abort(resp.status_code)
 
-    def post(self, id_):
+class PersonSubscribePost(Resource):
+    API_PATH_PSP = API_PATH + '{}{}{}'.format('/services/{}/people/{}/subscriptions/posts/{}')
+
+    def post(self, apiKey, id_, postId):
         args = request.form
-        resp = requests.post(self.API_PATH_PSC.format(id_), data=args)
+        resp = requests.post(self.API_PATH_PSP.format(apiKey, id_, postId), data=args)
         if resp.status_code == 200:
-            return resp.text
-        else:
-            abort(resp.status_code)
-
-    def delete(self, id_):
-        resp = requests.post(self.API_PATH_PSC.format(id_))
-        if resp.status_code == 204:
             return resp.text
         else:
             abort(resp.status_code)
@@ -136,8 +175,10 @@ api.add_resource(PersonRegister, '/people')
 api.add_resource(PersonLogin, '/people/login')
 api.add_resource(PersonLogout, '/people/logout')
 api.add_resource(PersonChangePassword, '/people/change-password')
+api.add_resource(Person, '/services/<int:apiKey>/people/<int:id_>')
+api.add_resource(PersonCollection, 'services/<int:apiKey>/people')
 api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
 api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
 api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
-api.add_resource(PersonSubscriptionCollection, '/people/<int:id_>/subscriptions')
-
+api.add_resource(PersonSubscriptionCollection, '/services/<int:apiKey>/people/<int:id_>/subscriptions')
+api.add_resource(PersonSubscribePost, '/services/<int:apiKey>/people/<int:id_>/subscriptions/posts/<int:postId>')
