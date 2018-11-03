@@ -3,7 +3,7 @@ from flask_restful import Resource, Api
 
 import requests
 
-API_PATH = 'charette15.ing.puc.cl/api'
+API_PATH = 'http://charette15.ing.puc.cl/api'
 
 
 class ResponseCollection(Resource):
@@ -48,4 +48,4 @@ responses_api = Blueprint('resources.responses', __name__)
 api = Api(responses_api)
 api.add_resource(ResponseCollection, '/responses')
 api.add_resource(Response, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
-api.add_resource(Response, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:msgId>/responses/author/<int:id_>')
+api.add_resource(Response, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:msgId>/responses/author/<int:id_>', endpoint='responsecreate')

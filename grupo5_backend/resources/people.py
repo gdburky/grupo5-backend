@@ -1,17 +1,18 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api, reqparse
 
 import requests
 
-API_PATH = 'charette15.ing.puc.cl/api'
+API_PATH = 'http://charette15.ing.puc.cl/api'
 
 class PersonRegister(Resource):
     API_PATH_PR = API_PATH + '{}'.format('/people')
 
     def post(self):
         args = request.form
+
         resp = requests.post(self.API_PATH_PR, data=args)
-        if resp.status_code == 200:
+        if resp.status_code == 201:
             return resp.text
         else:
             abort(resp.status_code)
@@ -21,8 +22,10 @@ class PersonLogin(Resource):
 
     def post(self):
         args = request.form
-        resp = requests.post(self.API_PATH_PL, data=args)
-        if resp.status_code == 200:
+        data = {"email": args['email'], "password": args['password']}
+        print(data)
+        resp = requests.post(self.API_PATH_PL, data=jsonify(data))
+        if resp.status_code == 202:
             return resp.text
         else:
             abort(resp.status_code)
@@ -176,7 +179,7 @@ api.add_resource(PersonLogin, '/people/login')
 api.add_resource(PersonLogout, '/people/logout')
 api.add_resource(PersonChangePassword, '/people/change-password')
 api.add_resource(Person, '/services/<int:apiKey>/people/<int:id_>')
-api.add_resource(PersonCollection, 'services/<int:apiKey>/people')
+api.add_resource(PersonCollection, '/services/<int:apiKey>/people')
 api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
 api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
 api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')

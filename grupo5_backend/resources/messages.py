@@ -3,7 +3,7 @@ from flask_restful import Resource, Api
 
 import requests
 
-API_PATH = 'charette15.ing.puc.cl/api'
+API_PATH = 'http://charette15.ing.puc.cl/api'
 
 
 class MessagesCollection(Resource):
@@ -69,6 +69,6 @@ messages_api = Blueprint('resources.messages', __name__)
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
 api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>')
-api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/author/<int:id_>')
+api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/author/<int:id_>', endpoint='messagecreate')
 api.add_resource(MessagesResponsesCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>/responses')
 api.add_resource(MessagesHashtagCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/filter/<string:hashtag>')

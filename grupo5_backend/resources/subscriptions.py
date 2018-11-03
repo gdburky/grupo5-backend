@@ -3,7 +3,7 @@ from flask_restful import Resource, Api
 
 import requests
 
-API_PATH = 'charette15.ing.puc.cl/api'
+API_PATH = 'http://.charette15.ing.puc.cl/api'
 
 
 class SubscriptionCollection(Resource):
