@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api
 
 import requests
@@ -12,7 +12,7 @@ class PostCollection(Resource):
     def get(self, apiKey):
         resp = requests.get(self.API_PATH_PC.format(apiKey))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -24,28 +24,28 @@ class Post(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_P_CREATE.format(apiKey, id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def put(self, apiKey, id_):
         resp = requests.put(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def delete(self, apiKey, id_):
         resp = requests.delete(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 204:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)  
 
@@ -55,7 +55,7 @@ class PostMessagesCollection(Resource):
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PMC.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -65,7 +65,7 @@ class PostSubscriptionCollection(Resource):
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -76,7 +76,7 @@ class PostHashtagCollection(Resource):
     def get(self, apiKey, hashtag):
         resp = requests.get(self.API_PATH_PHC.format(apiKey, hashtag))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -84,9 +84,9 @@ class PostHashtagCollection(Resource):
 posts_api = Blueprint('resources.posts', __name__)
 
 api = Api(posts_api)
-api.add_resource(PostCollection, '/services/<int:apiKey>/posts')
-api.add_resource(Post, '/services/<int:apiKey>/posts/<int:id_>', endpoint='postedit')
-api.add_resource(Post, '/services/<int:apiKey>/posts/author/<int:id_>', endpoint='postcreation')
-api.add_resource(PostMessagesCollection, '/services/<int:apiKey>/posts/<int:id_>/messages')
-api.add_resource(PostSubscriptionCollection, '/services/<int:apiKey>/posts/<int:id_>/subscriptions')
-api.add_resource(PostHashtagCollection, '/services/<int:apiKey>/posts/filter/<string:hashtag>')
+api.add_resource(PostCollection, '/services/<string:apiKey>/posts')
+api.add_resource(Post, '/services/<string:apiKey>/posts/<int:id_>', endpoint='postedit')
+api.add_resource(Post, '/services/<string:apiKey>/posts/author/<int:id_>', endpoint='postcreation')
+api.add_resource(PostMessagesCollection, '/services/<string:apiKey>/posts/<int:id_>/messages')
+api.add_resource(PostSubscriptionCollection, '/services/<string:apiKey>/posts/<int:id_>/subscriptions')
+api.add_resource(PostHashtagCollection, '/services/<string:apiKey>/posts/filter/<string:hashtag>')

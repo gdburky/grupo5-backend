@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api
 
 import requests
@@ -12,7 +12,7 @@ class SubscriptionCollection(Resource):
     def get(self):
         resp = requests.get(self.API_PATH_SC)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else: 
             abort(resp.status_code)
     
@@ -20,7 +20,7 @@ class SubscriptionCollection(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_SC, data=args)
         if resp.status_code == 201:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -30,13 +30,13 @@ class Subscription(Resource):
     def get(self, id_):
         resp = requests.get(self.API_PATH_S.format(id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
     def delete(self, id_):
         resp = requests.delete(self.API_PATH_S.format(id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 

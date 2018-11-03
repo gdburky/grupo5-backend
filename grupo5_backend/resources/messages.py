@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api
 
 import requests
@@ -12,7 +12,7 @@ class MessagesCollection(Resource):
     def get(self):
         resp = requests.get(self.API_PATH_MC)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -24,21 +24,21 @@ class Message(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_M_CREATE.format(apiKey, postId, id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def get(self, apiKey, postId, id_):
         resp = requests.get(self.API_PATH_M.format(apiKey, postId, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def delete(self, apiKey, postId, id_):
         resp = requests.delete(self.API_PATH_M.format(apiKey, postId, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -49,7 +49,7 @@ class MessagesResponsesCollection(Resource):
     def get(self, apiKey, postId, id_):
         resp = requests.get(self.API_PATH_MRC.format(apiKey, postId, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -59,7 +59,7 @@ class MessagesHashtagCollection(Resource):
     def get(self, apiKey, postId, hashtag):
         resp = requests.get(self.API_PATH_MHC.format(apiKey, postId, hashtag))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -68,7 +68,7 @@ messages_api = Blueprint('resources.messages', __name__)
 
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
-api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>')
-api.add_resource(Message, '/services/<int:apiKey>/posts/<int:postId>/messages/author/<int:id_>', endpoint='messagecreate')
-api.add_resource(MessagesResponsesCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/<int:id_>/responses')
-api.add_resource(MessagesHashtagCollection, '/services/<int:apiKey>/posts/<int:postId>/messages/filter/<string:hashtag>')
+api.add_resource(Message, '/services/<string:apiKey>/posts/<int:postId>/messages/<int:id_>')
+api.add_resource(Message, '/services/<string:apiKey>/posts/<int:postId>/messages/author/<int:id_>', endpoint='messagecreate')
+api.add_resource(MessagesResponsesCollection, '/services/<string:apiKey>/posts/<int:postId>/messages/<int:id_>/responses')
+api.add_resource(MessagesHashtagCollection, '/services/<string:apiKey>/posts/<int:postId>/messages/filter/<string:hashtag>')

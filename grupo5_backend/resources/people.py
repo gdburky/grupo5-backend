@@ -13,20 +13,34 @@ class PersonRegister(Resource):
 
         resp = requests.post(self.API_PATH_PR, data=args)
         if resp.status_code == 201:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
 class PersonLogin(Resource):
     API_PATH_PL = API_PATH + '{}'.format('/people/login')
 
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'email',
+            required=True,
+            help= 'No email provided',
+            location=['form', 'json',]
+        )
+        self.reqparse.add_argument(
+            'password',
+            required=True,
+            help= 'No password provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
     def post(self):
-        args = request.form
-        data = {"email": args['email'], "password": args['password']}
-        print(data)
-        resp = requests.post(self.API_PATH_PL, data=jsonify(data))
-        if resp.status_code == 202:
-            return resp.text
+        args = self.reqparse.parse_args()
+        resp = requests.post(self.API_PATH_PL, data=args)
+        if resp.status_code == 200:
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -37,7 +51,7 @@ class PersonLogout(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PL, data=args)
         if resp.status_code == 204:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -48,7 +62,7 @@ class PersonChangePassword(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PCP, data=args)
         if resp.status_code == 204:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -58,31 +72,31 @@ class Person(Resource):
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def put(self, apiKey, id_):
         resp = requests.put(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def delete(self, apiKey, id_):
         resp = requests.delete(self.API_PATH_P.format(apiKey, id_))
         if resp.status_code == 204:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)   
 
 class PersonCollection(Resource):
     API_PATH_PC = API_PATH + '{}'.format('/services/{}/people')
 
-    def get(self, id_):
-        resp = requests.get(self.API_PATH_PC.format(id_))
+    def get(self, apiKey):
+        resp = requests.get(self.API_PATH_PC.format(apiKey))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -91,7 +105,7 @@ class PersonCollection(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PC.format(id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -101,7 +115,7 @@ class PersonPostCollection(Resource):
     def get(self, id_):
         resp = requests.get(self.API_PATH_PPC.format(id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -109,7 +123,7 @@ class PersonPostCollection(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PPC.format(id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -119,7 +133,7 @@ class PersonMessageCollection(Resource):
     def get(self, id_):
         resp = requests.get(self.API_PATH_PMC.format(id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -127,7 +141,7 @@ class PersonMessageCollection(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PMC.format(id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -137,7 +151,7 @@ class PersonResponseCollection(Resource):
     def get(self, id_):
         resp = requests.get(self.API_PATH_PRC.format(id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -145,7 +159,7 @@ class PersonResponseCollection(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PRC.format(id_), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -155,7 +169,7 @@ class PersonSubscriptionCollection(Resource):
     def get(self, apiKey, id_):
         resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -166,7 +180,7 @@ class PersonSubscribePost(Resource):
         args = request.form
         resp = requests.post(self.API_PATH_PSP.format(apiKey, id_, postId), data=args)
         if resp.status_code == 200:
-            return resp.text
+            return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
@@ -178,10 +192,10 @@ api.add_resource(PersonRegister, '/people')
 api.add_resource(PersonLogin, '/people/login')
 api.add_resource(PersonLogout, '/people/logout')
 api.add_resource(PersonChangePassword, '/people/change-password')
-api.add_resource(Person, '/services/<int:apiKey>/people/<int:id_>')
-api.add_resource(PersonCollection, '/services/<int:apiKey>/people')
+api.add_resource(Person, '/services/<string:apiKey>/people/<int:id_>')
+api.add_resource(PersonCollection, '/services/<string:apiKey>/people')
 api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
 api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
 api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
-api.add_resource(PersonSubscriptionCollection, '/services/<int:apiKey>/people/<int:id_>/subscriptions')
-api.add_resource(PersonSubscribePost, '/services/<int:apiKey>/people/<int:id_>/subscriptions/posts/<int:postId>')
+api.add_resource(PersonSubscriptionCollection, '/services/<string:apiKey>/people/<int:id_>/subscriptions')
+api.add_resource(PersonSubscribePost, '/services/<string:apiKey>/people/<int:id_>/subscriptions/posts/<int:postId>')
