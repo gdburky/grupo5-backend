@@ -3,14 +3,17 @@ from flask_restful import Resource, Api
 
 import requests
 
+from service import serviceId
+
 API_PATH = 'http://charette15.ing.puc.cl/api'
 
 
 class PostCollection(Resource):
     API_PATH_PC = API_PATH + '{}'.format('/services/{}/posts')
 
-    def get(self, apiKey):
-        resp = requests.get(self.API_PATH_PC.format(apiKey))
+    def get(self):
+        global serviceId
+        resp = requests.get(self.API_PATH_PC.format(serviceId))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -18,42 +21,49 @@ class PostCollection(Resource):
 
 class Post(Resource):
     API_PATH_P = API_PATH + '{}'.format('/services/{}/posts/{}')
-    API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts/author/{}')
 
-    def post(self, apiKey, id_):
-        args = request.form
-        resp = requests.post(self.API_PATH_P_CREATE.format(apiKey, id_), data=args)
+    def get(self, id_):
+        global serviceId
+        resp = requests.get(self.API_PATH_P.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
-    def get(self, apiKey, id_):
-        resp = requests.get(self.API_PATH_P.format(apiKey, id_))
+    def put(self, id_):
+        global serviceId
+        resp = requests.put(self.API_PATH_P.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
-    def put(self, apiKey, id_):
-        resp = requests.put(self.API_PATH_P.format(apiKey, id_))
-        if resp.status_code == 200:
-            return jsonify(resp.json())
-        else:
-            abort(resp.status_code)
-
-    def delete(self, apiKey, id_):
-        resp = requests.delete(self.API_PATH_P.format(apiKey, id_))
+    def delete(self, id_):
+        global serviceId
+        resp = requests.delete(self.API_PATH_P.format(serviceId, id_))
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)  
 
+class PostCreate(Resource):
+    API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts/author/{}')
+
+    def post(self, id_):
+        global serviceId
+        args = request.form
+        resp = requests.post(self.API_PATH_P_CREATE.format(serviceId, id_), data=args)
+        if resp.status_code == 200:
+            return jsonify(resp.json())
+        else:
+            abort(resp.status_code)
+
 class PostMessagesCollection(Resource):
     API_PATH_PMC = API_PATH + '{}'.format('/services/{}/posts/{}/messages')
 
-    def get(self, apiKey, id_):
-        resp = requests.get(self.API_PATH_PMC.format(apiKey, id_))
+    def get(self, id_):
+        global serviceId
+        resp = requests.get(self.API_PATH_PMC.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -62,8 +72,9 @@ class PostMessagesCollection(Resource):
 class PostSubscriptionCollection(Resource):
     API_PATH_PSC = API_PATH + '{}'.format('/services/{}/posts/{}/subscriptions')
 
-    def get(self, apiKey, id_):
-        resp = requests.get(self.API_PATH_PSC.format(apiKey, id_))
+    def get(self, id_):
+        global serviceId
+        resp = requests.get(self.API_PATH_PSC.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -73,8 +84,9 @@ class PostSubscriptionCollection(Resource):
 class PostHashtagCollection(Resource):
     API_PATH_PHC = API_PATH + '{}'.format('/services/{}/posts/filter/{}')
 
-    def get(self, apiKey, hashtag):
-        resp = requests.get(self.API_PATH_PHC.format(apiKey, hashtag))
+    def get(self,  hashtag):
+        global serviceId
+        resp = requests.get(self.API_PATH_PHC.format(serviceId, hashtag))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -84,9 +96,9 @@ class PostHashtagCollection(Resource):
 posts_api = Blueprint('resources.posts', __name__)
 
 api = Api(posts_api)
-api.add_resource(PostCollection, '/services/<string:apiKey>/posts')
-api.add_resource(Post, '/services/<string:apiKey>/posts/<int:id_>', endpoint='postedit')
-api.add_resource(Post, '/services/<string:apiKey>/posts/author/<int:id_>', endpoint='postcreation')
-api.add_resource(PostMessagesCollection, '/services/<string:apiKey>/posts/<int:id_>/messages')
-api.add_resource(PostSubscriptionCollection, '/services/<string:apiKey>/posts/<int:id_>/subscriptions')
-api.add_resource(PostHashtagCollection, '/services/<string:apiKey>/posts/filter/<string:hashtag>')
+api.add_resource(PostCollection, '/posts')
+api.add_resource(Post, '/posts/<int:id_>')
+api.add_resource(Post, '/posts/author/<int:id_>', endpoint='postcreate')
+api.add_resource(PostMessagesCollection, '/posts/<int:id_>/messages')
+api.add_resource(PostSubscriptionCollection, '/posts/<int:id_>/subscriptions')
+api.add_resource(PostHashtagCollection, '/posts/filter/<string:hashtag>')

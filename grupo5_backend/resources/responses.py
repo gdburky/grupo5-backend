@@ -3,6 +3,8 @@ from flask_restful import Resource, Api
 
 import requests
 
+from service import serviceId
+
 API_PATH = 'http://charette15.ing.puc.cl/api'
 
 
@@ -18,18 +20,10 @@ class ResponseCollection(Resource):
 
 class Response(Resource):
     API_PATH_R = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses/{}')
-    API_PATH_R_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses/author/{}')
-
-    def post(self, apiKey, postId, msgId, id_):
-        args = request.form
-        resp = requests.post(self.API_PATH_R_CREATE.format(apiKey, postId, msgId, id_), data=args)
-        if resp.status_code == 200:
-            return jsonify(resp.json())
-        else:
-            abort(resp.status_code)
 
     def get(self, apiKey, postId, msgId, id_):
-        resp = requests.get(self.API_PATH_R.format(apiKey, postId, msgId, id_))
+        global serviceId
+        resp = requests.get(self.API_PATH_R.format(serviceId, postId, msgId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -42,10 +36,22 @@ class Response(Resource):
         else:
             abort(resp.status_code)
 
+class ResponseCreate(Resource):
+    API_PATH_R_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses/author/{}')
+
+    def post(self, postId, msgId, id_):
+        global serviceId
+        args = request.form
+        resp = requests.post(self.API_PATH_R_CREATE.format(serviceId, postId, msgId, id_), data=args)
+        if resp.status_code == 200:
+            return jsonify(resp.json())
+        else:
+            abort(resp.status_code)
+
 
 responses_api = Blueprint('resources.responses', __name__)
 
 api = Api(responses_api)
 api.add_resource(ResponseCollection, '/responses')
-api.add_resource(Response, '/services/<string:apiKey>/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
-api.add_resource(Response, '/services/<string:apiKey>/posts/<int:postId>/messages/<int:msgId>/responses/author/<int:id_>', endpoint='responsecreate')
+api.add_resource(Response, '/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
+api.add_resource(ResponseCreate, '/posts/<int:postId>/messages/<int:msgId>/responses/author/<int:id_>', endpoint='responsecreate')
