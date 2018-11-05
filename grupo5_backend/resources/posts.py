@@ -3,21 +3,23 @@ from flask_restful import Resource, Api
 
 import requests
 
-from service import serviceId
+from resources.service import serviceId
 
 API_PATH = 'http://charette15.ing.puc.cl/api'
-
+#class PostCollection(Resource):
+#    API_PATH_PC = API_PATH + '{}'.format('/services/{}/posts')
+#
+#    def get(self):
+#        global serviceId
+#        resp = requests.get(self.API_PATH_PC.format(serviceId))
+#        if resp.status_code == 200:
+#            return jsonify(resp.json())
+#        else:
+#            abort(resp.status_code)
 
 class PostCollection(Resource):
-    API_PATH_PC = API_PATH + '{}'.format('/services/{}/posts')
-
     def get(self):
-        global serviceId
-        resp = requests.get(self.API_PATH_PC.format(serviceId))
-        if resp.status_code == 200:
-            return jsonify(resp.json())
-        else:
-            abort(resp.status_code)
+        return "Hello World"
 
 class Post(Resource):
     API_PATH_P = API_PATH + '{}'.format('/services/{}/posts/{}')

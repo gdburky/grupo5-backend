@@ -7,8 +7,8 @@ from resources.responses import responses_api
 from resources.subscriptions import subscriptions_api
 
 # Flask settings
-FLASK_SERVER_NAME = 'localhost:8888'
-FLASK_DEBUG = True  # Do not use debug mode in production
+FLASK_SERVER_NAME = 'charette14.ing.puc.cl'
+FLASK_DEBUG = False  # Do not use debug mode in production
 
 app = Flask(__name__)
 
