@@ -15,7 +15,7 @@ class ResponseCollection(Resource):
         resp = requests.get(self.API_PATH_RC)
         if resp.status_code == 200:
             return jsonify(resp.json())
-        else: 
+        else:
             abort(resp.status_code)
 
 class Response(Resource):
@@ -28,7 +28,7 @@ class Response(Resource):
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
-    
+
     def delete(self, id_):
         resp = requests.delete(self.API_PATH_R.format(id_))
         if resp.status_code == 200:

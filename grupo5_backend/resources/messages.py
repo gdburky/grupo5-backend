@@ -12,18 +12,19 @@ class MessagesCollection(Resource):
     API_PATH_MC = API_PATH + '{}'.format('/messages')
 
     def get(self):
-        resp = requests.get(self.API_PATH_MC)
+        args = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_MC, , params={'access_token': args})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
 class Message(Resource):
-    API_PATH_M = API_PATH + '{}'.format('/services/{}/messages/{}')
+    API_PATH_M = API_PATH + '{}'.format('/messages/{}')
 
     def get(self, id_):
-        global serviceId
-        resp = requests.get(self.API_PATH_M.format(serviceId, id_))
+        args = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_M.format(id_), params={'access_token': args})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -31,7 +32,8 @@ class Message(Resource):
 
     def delete(self, id_):
         global serviceId
-        resp = requests.delete(self.API_PATH_M.format(serviceId, id_))
+        args = request.args.get('access_token','')
+        resp = requests.delete(self.API_PATH_M.format(serviceId, id_), params={'access_token': args})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -39,7 +41,7 @@ class Message(Resource):
 
 
 class MessageCreate(Resource):
-    API_PATH_M_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages')
+    API_PATH_M_CREATE = API_PATH + '{}'.format('/posts/{}/messages')
 
     def __init__(self):
         self.reqparse= reqparse.RequestParser()
@@ -52,9 +54,9 @@ class MessageCreate(Resource):
         super().__init__()
 
     def post(self, postId):
-        global serviceId
         args = self.reqparse.parse_args()
-        resp = requests.post(self.API_PATH_M_CREATE.format(serviceId, postId), data=args)
+        params = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_M_CREATE.format(postId), data=args, params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -62,22 +64,34 @@ class MessageCreate(Resource):
 
 
 class MessagesResponsesCollection(Resource):
-    API_PATH_MRC = API_PATH + '{}'.format('/services/{}/messages/{}/responses')
+    API_PATH_MRC = API_PATH + '{}'.format('/messages/{}/responses')
 
     def get(self, id_):
-        global serviceId
-        resp = requests.get(self.API_PATH_MRC.format(serviceId, id_))
+        params = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_MRC.format(id_), params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
 class MessagesHashtagCollection(Resource):
-    API_PATH_MHC = API_PATH + '{}'.format('/services/{}/posts/{}/messages/filter/{}')
+    API_PATH_MHC = API_PATH + '{}'.format('/services/{}/filterMessages/filterString')
 
-    def get(self, postId, hashtag):
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'hashtag',
+            required=True,
+            help= 'No hashtag provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
+    def get(self, postId):
         global serviceId
-        resp = requests.get(self.API_PATH_MHC.format(serviceId, postId, hashtag))
+        params = request.args.get('access_token','')
+        args = self.reqparse.parse_args()
+        resp = requests.get(self.API_PATH_MHC.format(serviceId), data=args, params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -91,4 +105,4 @@ api.add_resource(MessagesCollection, '/messages')
 api.add_resource(Message, '/messages/<int:id_>')
 api.add_resource(MessageCreate, '/posts/<int:postId>/messages', endpoint='messagecreate')
 api.add_resource(MessagesResponsesCollection, '/messages/<int:id_>/responses')
-api.add_resource(MessagesHashtagCollection, '/posts/<int:postId>/messages/filter/<string:hashtag>')
+api.add_resource(MessagesHashtagCollection, '/filterMessages/filterString')

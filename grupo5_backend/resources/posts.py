@@ -6,27 +6,26 @@ import requests
 from resources.service import serviceId
 
 API_PATH = 'http://charette15.ing.puc.cl/api'
-#class PostCollection(Resource):
-#    API_PATH_PC = API_PATH + '{}'.format('/services/{}/posts')
-#
-#    def get(self):
-#        global serviceId
-#        resp = requests.get(self.API_PATH_PC.format(serviceId))
-#        if resp.status_code == 200:
-#            return jsonify(resp.json())
-#        else:
-#            abort(resp.status_code)
 
 class PostCollection(Resource):
-    def get(self):
-        return "Hello World"
+   API_PATH_PC = API_PATH + '{}'.format('/services/{}/posts')
+
+   def get(self):
+       global serviceId
+       params = request.args.get('access_token','')
+       resp = requests.get(self.API_PATH_PC.format(serviceId), params={'access_token': params})
+       if resp.status_code == 200:
+           return jsonify(resp.json())
+       else:
+           abort(resp.status_code)
 
 class Post(Resource):
     API_PATH_P = API_PATH + '{}'.format('/services/{}/posts/{}')
+    API_PATH_P2 = API_PATH + '{}'.format('/posts/{}')
 
     def get(self, id_):
-        global serviceId
-        resp = requests.get(self.API_PATH_P.format(serviceId, id_))
+        params = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_P2.format(id_), params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -46,7 +45,7 @@ class Post(Resource):
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
-            abort(resp.status_code)  
+            abort(resp.status_code)
 
 class PostCreate(Resource):
     API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts')
@@ -63,8 +62,9 @@ class PostCreate(Resource):
 
     def post(self):
         global serviceId
+        params = request.args.get('access_token','')
         args = self.reqparse.parse_args()
-        resp = requests.post(self.API_PATH_P_CREATE.format(serviceId), data=args)
+        resp = requests.post(self.API_PATH_P_CREATE.format(serviceId), data=args, params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -75,7 +75,8 @@ class PostMessagesCollection(Resource):
 
     def get(self, id_):
         global serviceId
-        resp = requests.get(self.API_PATH_PMC.format(serviceId, id_))
+        params = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_PMC.format(serviceId, id_), params = request.args.get('access_token',''))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -94,11 +95,23 @@ class PostSubscriptionCollection(Resource):
 
 
 class PostHashtagCollection(Resource):
-    API_PATH_PHC = API_PATH + '{}'.format('/services/{}/posts/filter/{}')
+    API_PATH_PHC = API_PATH + '{}'.format('/services/{}/filterPosts/filterString')
 
-    def get(self,  hashtag):
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'hashtag',
+            required=True,
+            help= 'No hashtag provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
+    def get(self):
         global serviceId
-        resp = requests.get(self.API_PATH_PHC.format(serviceId, hashtag))
+        params = request.args.get('access_token','')
+        args = self.reqparse.parse_args()
+        resp = requests.get(self.API_PATH_PHC.format(serviceId), data=args, params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -113,4 +126,6 @@ api.add_resource(Post, '/posts/<int:id_>')
 api.add_resource(PostCreate, '/posts', endpoint='postcreate')
 api.add_resource(PostMessagesCollection, '/posts/<int:id_>/messages')
 api.add_resource(PostSubscriptionCollection, '/posts/<int:id_>/subscriptions')
-api.add_resource(PostHashtagCollection, '/posts/filter/<string:hashtag>')
+api.add_resource(PostHashtagCollection, '/filterPosts/filterString')
+
+

@@ -23,9 +23,9 @@ class SubscriptionCollection(Resource):
         resp = requests.get(self.API_PATH_SC)
         if resp.status_code == 200:
             return jsonify(resp.json())
-        else: 
+        else:
             abort(resp.status_code)
-    
+
     def post(self):
         args = self.reqparse.parse_args()
         resp = requests.post(self.API_PATH_SC, data=args)

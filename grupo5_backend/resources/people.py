@@ -96,7 +96,7 @@ class Person(Resource):
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
-            abort(resp.status_code)   
+            abort(resp.status_code)
 
 class PersonCollection(Resource):
     API_PATH_PC = API_PATH + '{}'.format('/services/{}/people')
@@ -109,7 +109,7 @@ class PersonCollection(Resource):
         else:
             abort(resp.status_code)
 
-    #este es para crear personas pero usa el mismo path PC...    
+    #este es para crear personas pero usa el mismo path PC...
     def post(self, id_):
         args = request.form
         resp = requests.post(self.API_PATH_PC.format(id_), data=args)
