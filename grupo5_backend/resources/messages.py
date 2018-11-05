@@ -13,7 +13,7 @@ class MessagesCollection(Resource):
 
     def get(self):
         args = request.args.get('access_token','')
-        resp = requests.get(self.API_PATH_MC, , params={'access_token': args})
+        resp = requests.get(self.API_PATH_MC, params={'access_token': args})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:

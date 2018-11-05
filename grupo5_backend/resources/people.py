@@ -29,7 +29,8 @@ class PersonRegister(Resource):
     def post(self):
         global serviceId
         args = self.reqparse.parse_args()
-        resp = requests.post(self.API_PATH_PR.format(serviceId), data=args)
+        token = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_PR.format(serviceId), data=args, params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -252,6 +253,4 @@ api.add_resource(PersonCollection, '/people')
 api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
 api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
 api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
-api.add_resource(PersonSubscriptionCollection, '/people/<int:id_>/subscriptions')
 api.add_resource(PersonSubscribePost, '/people/<int:id_>/subscriptions/posts/<int:postId>')
-api.add_resource(PersonDeleteSubscription, '/people/<int:id_>/subscriptions/<int:subId>')

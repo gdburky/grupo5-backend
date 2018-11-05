@@ -7,7 +7,7 @@ API_PATH = 'http://.charette15.ing.puc.cl/api'
 
 
 class SubscriptionCollection(Resource):
-    API_PATH_SC = API_PATH + '{}'.format('/api/people/{}/subscriptions')
+    API_PATH_SC = API_PATH + '{}'.format('/people/{}/subscriptions')
 
     def __init__(self):
         self.reqparse= reqparse.RequestParser()
@@ -49,7 +49,7 @@ class SubscriptionCollection(Resource):
             abort(resp.status_code)
 
 class Subscription(Resource):
-    API_PATH_S = API_PATH + '{}'.format('people/{}}/subscriptions/{}')
+    API_PATH_S = API_PATH + '{}'.format('/people/{}/subscriptions/{}')
 
     def get(self,personId, id_):
         resp = requests.get(self.API_PATH_S.format(personId,id_))
