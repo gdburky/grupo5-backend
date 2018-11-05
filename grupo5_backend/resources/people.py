@@ -72,11 +72,12 @@ class PersonChangePassword(Resource):
             abort(resp.status_code)
 
 class Person(Resource):
-    API_PATH_P = API_PATH + '{}'.format('/services/{}/people/{}')
+    API_PATH_P = API_PATH + '{}'.format('/people/{}')
 
     def get(self, id_):
         global serviceId
-        resp = requests.get(self.API_PATH_P.format(serviceId, id_))
+        args = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_P.format(id_), params={'access_token': args})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
