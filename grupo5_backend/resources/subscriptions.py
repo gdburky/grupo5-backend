@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 import requests
 
@@ -9,6 +9,16 @@ API_PATH = 'http://.charette15.ing.puc.cl/api'
 class SubscriptionCollection(Resource):
     API_PATH_SC = API_PATH + '{}'.format('/subscriptions')
 
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'postId',
+            required=True,
+            help= 'No post id provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
     def get(self):
         resp = requests.get(self.API_PATH_SC)
         if resp.status_code == 200:
@@ -17,7 +27,7 @@ class SubscriptionCollection(Resource):
             abort(resp.status_code)
     
     def post(self):
-        args = request.form
+        args = self.reqparse.parse_args()
         resp = requests.post(self.API_PATH_SC, data=args)
         if resp.status_code == 201:
             return jsonify(resp.json())

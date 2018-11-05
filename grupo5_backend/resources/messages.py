@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 import requests
 
@@ -41,9 +41,19 @@ class Message(Resource):
 class MessageCreate(Resource):
     API_PATH_M_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages')
 
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'description',
+            required=True,
+            help= 'No description provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
     def post(self, postId):
         global serviceId
-        args = request.form
+        args = self.reqparse.parse_args()
         resp = requests.post(self.API_PATH_M_CREATE.format(serviceId, postId), data=args)
         if resp.status_code == 200:
             return jsonify(resp.json())
