@@ -19,19 +19,19 @@ class MessagesCollection(Resource):
             abort(resp.status_code)
 
 class Message(Resource):
-    API_PATH_M = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}')
+    API_PATH_M = API_PATH + '{}'.format('/services/{}/messages/{}')
 
-    def get(self, postId, id_):
+    def get(self, id_):
         global serviceId
-        resp = requests.get(self.API_PATH_M.format(serviceId, postId, id_))
+        resp = requests.get(self.API_PATH_M.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
-    def delete(self, postId, id_):
+    def delete(self, id_):
         global serviceId
-        resp = requests.delete(self.API_PATH_M.format(serviceId, postId, id_))
+        resp = requests.delete(self.API_PATH_M.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -39,12 +39,12 @@ class Message(Resource):
 
 
 class MessageCreate(Resource):
-    API_PATH_M_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages/author/{}')
+    API_PATH_M_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages')
 
-    def post(self, postId, id_):
+    def post(self, postId):
         global serviceId
         args = request.form
-        resp = requests.post(self.API_PATH_M_CREATE.format(serviceId, postId, id_), data=args)
+        resp = requests.post(self.API_PATH_M_CREATE.format(serviceId, postId), data=args)
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -52,11 +52,11 @@ class MessageCreate(Resource):
 
 
 class MessagesResponsesCollection(Resource):
-    API_PATH_MRC = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses')
+    API_PATH_MRC = API_PATH + '{}'.format('/services/{}/messages/{}/responses')
 
-    def get(self, postId, id_):
+    def get(self, id_):
         global serviceId
-        resp = requests.get(self.API_PATH_MRC.format(serviceId, postId, id_))
+        resp = requests.get(self.API_PATH_MRC.format(serviceId, id_))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -78,7 +78,7 @@ messages_api = Blueprint('resources.messages', __name__)
 
 api = Api(messages_api)
 api.add_resource(MessagesCollection, '/messages')
-api.add_resource(Message, '/posts/<int:postId>/messages/<int:id_>')
-api.add_resource(MessageCreate, '/posts/<int:postId>/messages/author/<int:id_>', endpoint='messagecreate')
-api.add_resource(MessagesResponsesCollection, '/posts/<int:postId>/messages/<int:id_>/responses')
+api.add_resource(Message, '/messages/<int:id_>')
+api.add_resource(MessageCreate, '/posts/<int:postId>/messages', endpoint='messagecreate')
+api.add_resource(MessagesResponsesCollection, '/messages/<int:id_>/responses')
 api.add_resource(MessagesHashtagCollection, '/posts/<int:postId>/messages/filter/<string:hashtag>')

@@ -47,12 +47,12 @@ class Post(Resource):
             abort(resp.status_code)  
 
 class PostCreate(Resource):
-    API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts/author/{}')
+    API_PATH_P_CREATE = API_PATH + '{}'.format('/services/{}/posts')
 
-    def post(self, id_):
+    def post(self):
         global serviceId
         args = request.form
-        resp = requests.post(self.API_PATH_P_CREATE.format(serviceId, id_), data=args)
+        resp = requests.post(self.API_PATH_P_CREATE.format(serviceId), data=args)
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -98,7 +98,7 @@ posts_api = Blueprint('resources.posts', __name__)
 api = Api(posts_api)
 api.add_resource(PostCollection, '/posts')
 api.add_resource(Post, '/posts/<int:id_>')
-api.add_resource(Post, '/posts/author/<int:id_>', endpoint='postcreate')
+api.add_resource(PostCreate, '/posts', endpoint='postcreate')
 api.add_resource(PostMessagesCollection, '/posts/<int:id_>/messages')
 api.add_resource(PostSubscriptionCollection, '/posts/<int:id_>/subscriptions')
 api.add_resource(PostHashtagCollection, '/posts/filter/<string:hashtag>')

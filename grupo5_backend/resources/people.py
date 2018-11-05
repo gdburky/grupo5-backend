@@ -195,6 +195,17 @@ class PersonSubscribePost(Resource):
         else:
             abort(resp.status_code)
 
+class PersonDeleteSubscription(Resource):
+    API_PATH_DS = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions/{}')
+
+    def delete(self, id_, subId):
+        global serviceId
+        resp = requests.delete(self.API_PATH_S.format(serviceId, id_, subId))
+        if resp.status_code == 200:
+            return jsonify(resp.json())
+        else:
+            abort(resp.status_code)
+
 
 person_api = Blueprint('resources.people', __name__)
 
@@ -210,3 +221,4 @@ api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
 api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
 api.add_resource(PersonSubscriptionCollection, '/people/<int:id_>/subscriptions')
 api.add_resource(PersonSubscribePost, '/people/<int:id_>/subscriptions/posts/<int:postId>')
+api.add_resource(PersonDeleteSubscription, '/people/<int:id_>/subscriptions/<int:subId>')
