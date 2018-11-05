@@ -8,13 +8,29 @@ from resources.service import serviceId
 API_PATH = 'http://charette15.ing.puc.cl/api'
 
 class PersonRegister(Resource):
-    API_PATH_PR = API_PATH + '{}'.format('/people')
+    API_PATH_PR = API_PATH + '{}'.format('/services/{}/people')
+
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'email',
+            required=True,
+            help= 'No email provided',
+            location=['form', 'json',]
+        )
+        self.reqparse.add_argument(
+            'password',
+            required=True,
+            help= 'No password provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
 
     def post(self):
-        args = request.form
-
-        resp = requests.post(self.API_PATH_PR, data=args)
-        if resp.status_code == 201:
+        global serviceId
+        args = self.reqparse.parse_args()
+        resp = requests.post(self.API_PATH_PR.format(serviceId), data=args)
+        if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
@@ -53,8 +69,8 @@ class PersonLogout(Resource):
     API_PATH_PL = API_PATH + '{}'.format('/people/logout')
 
     def post(self):
-        args = request.form
-        resp = requests.post(self.API_PATH_PL, data=args)
+        token = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_PL, params={'access_token': token})
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
@@ -63,9 +79,26 @@ class PersonLogout(Resource):
 class PersonChangePassword(Resource):
     API_PATH_PCP = API_PATH + '{}'.format('/people/change-password')
 
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'newPassword',
+            required=True,
+            help= 'No newPassword provided',
+            location=['form', 'json',]
+        )
+        self.reqparse.add_argument(
+            'oldPassword',
+            required=True,
+            help= 'No oldPassword provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
     def post(self):
-        args = request.form
-        resp = requests.post(self.API_PATH_PCP, data=args)
+        args = self.reqparse.parse_args()
+        token = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_PCP, data=args, params={'access_token': token})
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
@@ -96,7 +129,7 @@ class Person(Resource):
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
-            abort(resp.status_code)
+            abort(resp.status_code)   
 
 class PersonCollection(Resource):
     API_PATH_PC = API_PATH + '{}'.format('/services/{}/people')
@@ -109,7 +142,7 @@ class PersonCollection(Resource):
         else:
             abort(resp.status_code)
 
-    #este es para crear personas pero usa el mismo path PC...
+    #este es para crear personas pero usa el mismo path PC...    
     def post(self, id_):
         args = request.form
         resp = requests.post(self.API_PATH_PC.format(id_), data=args)
@@ -200,7 +233,7 @@ class PersonDeleteSubscription(Resource):
 
     def delete(self, id_, subId):
         global serviceId
-        resp = requests.delete(self.API_PATH_S.format(serviceId, id_, subId))
+        resp = requests.delete(self.API_PATH_DS.format(serviceId, id_, subId))
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
