@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 import requests
 
@@ -37,11 +37,21 @@ class Response(Resource):
             abort(resp.status_code)
 
 class ResponseCreate(Resource):
-    API_PATH_R_CREATE = API_PATH + '{}'.format('/services/{}/posts/{}/messages/{}/responses/author/{}')
+    API_PATH_R_CREATE = API_PATH + '{}'.format('/services/{}/messages/{}/responses')
 
-    def post(self, postId, msgId, id_):
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'description',
+            required=True,
+            help= 'No description provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
+
+    def post(self, msgId):
         global serviceId
-        args = request.form
+        args = self.reqparse.parse_args()
         resp = requests.post(self.API_PATH_R_CREATE.format(serviceId, postId, msgId, id_), data=args)
         if resp.status_code == 200:
             return jsonify(resp.json())
@@ -54,4 +64,4 @@ responses_api = Blueprint('resources.responses', __name__)
 api = Api(responses_api)
 api.add_resource(ResponseCollection, '/responses')
 api.add_resource(Response, '/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
-api.add_resource(ResponseCreate, '/posts/<int:postId>/messages/<int:msgId>/responses/author/<int:id_>', endpoint='responsecreate')
+api.add_resource(ResponseCreate, '/messages/<int:msgId>/responses', endpoint='responsecreate')
