@@ -1,11 +1,24 @@
 from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api, reqparse
 
+import json
 import requests
 
 from resources.service import serviceId
 
+SERVICEID = '175'
+ADMIN_EMAIL = 'a@a.cl'
+PASSWORD = '1234'
+LOGIN_DATA = {
+    'email': ADMIN_EMAIL,
+    'password': PASSWORD
+}
 API_PATH = 'http://charette15.ing.puc.cl/api'
+
+def getAccessToken(user):
+    response = requests.post(API_PATH + '/people/login', data=user)
+    return response.json()['id']
+
 
 class PersonRegister(Resource):
     API_PATH_PR = API_PATH + '{}'.format('/services/{}/people')
@@ -27,10 +40,9 @@ class PersonRegister(Resource):
         super().__init__()
 
     def post(self):
-        global serviceId
+        token = getAccessToken(LOGIN_DATA)
         args = self.reqparse.parse_args()
-        token = request.args.get('access_token','')
-        resp = requests.post(self.API_PATH_PR.format(serviceId), data=args, params={'access_token': token})
+        resp = requests.post(self.API_PATH_PR.format(SERVICEID), data=args, params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -106,57 +118,63 @@ class PersonChangePassword(Resource):
             abort(resp.status_code)
 
 class Person(Resource):
+    API_PATH_PERSON = API_PATH + '{}'.format('/services/{}/people/{}')
     API_PATH_P = API_PATH + '{}'.format('/people/{}')
 
     def get(self, id_):
-        args = request.args.get('access_token','')
-        resp = requests.get(self.API_PATH_P.format( id_), params={'access_token': args})
+        token = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_PERSON.format(SERVICEID, id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def put(self, id_):
-        global serviceId
-        resp = requests.put(self.API_PATH_P.format(serviceId, id_))
+        token = request.args.get('access_token','')
+        resp = requests.put(self.API_PATH_P.format( id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
     def delete(self, id_):
-        global serviceId
-        resp = requests.delete(self.API_PATH_P.format(serviceId, id_))
+        token = request.args.get('access_token','')
+        resp = requests.delete(self.API_PATH_P.format( id_), params={'access_token': token})
         if resp.status_code == 204:
             return jsonify(resp.json())
         else:
-            abort(resp.status_code)   
+            abort(resp.status_code)
 
 class PersonCollection(Resource):
     API_PATH_PC = API_PATH + '{}'.format('/services/{}/people')
 
     def get(self):
-        global serviceId
-        resp = requests.get(self.API_PATH_PC.format(serviceId))
+        token = getAccessToken(LOGIN_DATA)
+        resp = requests.get(self.API_PATH_PC.format(SERVICEID), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
-    #este es para crear personas pero usa el mismo path PC...    
+    #este es para crear personas pero usa el mismo path PC...
+    '''
     def post(self, id_):
+        token = request.args.get('access_token','')
         args = request.form
-        resp = requests.post(self.API_PATH_PC.format(id_), data=args)
+        resp = requests.post(self.API_PATH_PC.format(id_), data=args, params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
+    '''
 
+'''
 class PersonPostCollection(Resource):
     API_PATH_PPC = API_PATH + '{}'.format('/people/{}/posts')
 
     def get(self, id_):
-        resp = requests.get(self.API_PATH_PPC.format(id_))
+        token = getAccessToken(LOGIN_DATA)
+        resp = requests.get(self.API_PATH_PPC.format(id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -164,7 +182,8 @@ class PersonPostCollection(Resource):
 
     def post(self, id_):
         args = request.form
-        resp = requests.post(self.API_PATH_PPC.format(id_), data=args)
+        token = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_PPC.format(id_), data=args, params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -174,7 +193,8 @@ class PersonMessageCollection(Resource):
     API_PATH_PMC = API_PATH + '{}'.format('/people/{}/messages')
 
     def get(self, id_):
-        resp = requests.get(self.API_PATH_PMC.format(id_))
+        token = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_PMC.format(id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -182,6 +202,7 @@ class PersonMessageCollection(Resource):
 
     def post(self, id_):
         args = request.form
+        token = request.args.get('access_token','')
         resp = requests.post(self.API_PATH_PMC.format(id_), data=args)
         if resp.status_code == 200:
             return jsonify(resp.json())
@@ -205,18 +226,29 @@ class PersonResponseCollection(Resource):
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
+'''
 
 class PersonSubscriptionCollection(Resource):
-    API_PATH_PSC = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions')
+    API_PATH_PSC = API_PATH + '{}'.format('/people/{}/subscriptions')
 
     def get(self, id_):
-        global serviceId
-        resp = requests.get(self.API_PATH_PSC.format(serviceId, id_))
+        token = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_PSC.format( id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
 
+    def post(self, id_):
+        args = request.form
+        token = request.args.get('access_token','')
+        resp = requests.post(self.API_PATH_PSC.format( id_), data=args, params={'access_token': token})
+        if resp.status_code == 200:
+            return jsonify(resp.json())
+        else:
+            abort(resp.status_code)
+
+'''
 class PersonSubscribePost(Resource):
     API_PATH_PSP = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions/posts/{}')
 
@@ -228,13 +260,14 @@ class PersonSubscribePost(Resource):
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
+'''
 
-class PersonDeleteSubscription(Resource):
-    API_PATH_DS = API_PATH + '{}'.format('/services/{}/people/{}/subscriptions/{}')
+class PersonSubscription(Resource):
+    API_PATH_DS = API_PATH + '{}'.format('/people/{}/subscriptions/{}')
 
     def delete(self, id_, subId):
-        global serviceId
-        resp = requests.delete(self.API_PATH_DS.format(serviceId, id_, subId))
+        token = request.args.get('access_token','')
+        resp = requests.delete(self.API_PATH_DS.format( id_, subId), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
@@ -250,7 +283,9 @@ api.add_resource(PersonLogout, '/people/logout')
 api.add_resource(PersonChangePassword, '/people/change-password')
 api.add_resource(Person, '/people/<int:id_>')
 api.add_resource(PersonCollection, '/people')
-api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
-api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
-api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
-api.add_resource(PersonSubscribePost, '/people/<int:id_>/subscriptions/posts/<int:postId>')
+#api.add_resource(PersonPostCollection, '/people/<int:id_>/posts')
+#api.add_resource(PersonMessageCollection, '/people/<int:id_>/messages')
+#api.add_resource(PersonResponseCollection, '/people/<int:id_>/responses')
+api.add_resource(PersonSubscriptionCollection, '/people/<int:id_>/subscriptions')
+api.add_resource(PersonSubscription, '/people/<int:id_>/subscriptions/<int:subId>')
+#api.add_resource(PersonSubscribePost, '/people/<int:id_>/subscriptions/posts/<int:postId>')

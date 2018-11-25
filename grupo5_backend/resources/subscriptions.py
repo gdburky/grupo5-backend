@@ -36,9 +36,9 @@ class SubscriptionCollection(Resource):
         resp = requests.get(self.API_PATH_SC.format(id_), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
-        else: 
+        else:
             abort(resp.status_code)
-    
+
     def post(self, id_):
         token = request.args.get('access_token','')
         args = self.reqparse.parse_args()
@@ -69,5 +69,5 @@ class Subscription(Resource):
 subscriptions_api = Blueprint('resources.subscriptions', __name__)
 
 api = Api(subscriptions_api)
-api.add_resource(SubscriptionCollection, 'people/<int:id_>/subscriptions')
-api.add_resource(Subscription, 'people/<int:personId>/subscriptions/<int:id_>')
+#api.add_resource(SubscriptionCollection, 'people/<int:id_>/subscriptions')
+#api.add_resource(Subscription, 'people/<int:personId>/subscriptions/<int:id_>')
