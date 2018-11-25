@@ -30,13 +30,13 @@ Permite iniciar sesión en la aplicación.
 
 ### Logout
 
-[POST] /people/logout
+[POST] /people/logout **(NO IMPLEMENTADO POR GRUPO 3)**  
 
 Permite cerrar sesión.
 
 ### Change password
 
-[POST] /people/change-password
+[POST] /people/change-password **(NO IMPLEMENTADO POR GRUPO 3)**  
 
 Permite cambiar la contraseña.
 
@@ -106,7 +106,7 @@ Crea un nuevo mensaje asociado al post.
 
 ### Filter post
 
-[GET] /posts/filter/{hashtag}
+[GET] /posts/filter/{hashtag} **(NO IMPLEMENTADO POR GRUPO 3)**  
 
 Entrega todos los posts filtrados por *hashtag*.
 
@@ -134,6 +134,6 @@ Crea una nueva respuesta a un mensaje.
 
 ### Filter message
 
-[GET] /messages/filter/{hashtag}
+[GET] /messages/filter/{hashtag} **(NO IMPLEMENTADO POR GRUPO 3)**  
 
 Filtra los mensajes por *hashtag*.
