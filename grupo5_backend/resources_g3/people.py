@@ -144,8 +144,8 @@ api = Api(g3_person_api)
 api.add_resource(PersonRegister, '/people')
 api.add_resource(PersonLogin, '/people/login')
 api.add_resource(PersonId, '/people/<int:_id>')
-api.add_resource(PersonPostCollection, '/people/<int:_id>/posts')
-api.add_resource(PersonMessagesCollection, '/people/<int:_id>/messages')
+#api.add_resource(PersonPostCollection, '/people/<int:_id>/posts')
+#api.add_resource(PersonMessagesCollection, '/people/<int:_id>/messages')
 
 
 
