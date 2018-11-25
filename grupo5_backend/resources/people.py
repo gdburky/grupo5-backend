@@ -1,10 +1,7 @@
 from flask import Blueprint, abort, request, jsonify
 from flask_restful import Resource, Api, reqparse
 
-import json
 import requests
-
-from resources.service import serviceId
 
 SERVICEID = '175'
 ADMIN_EMAIL = 'a@a.cl'
@@ -72,8 +69,6 @@ class PersonLogin(Resource):
         resp = requests.post(self.API_PATH_PL, data=args)
         if resp.status_code == 200:
             data = resp.json()
-            global serviceId
-            serviceId = data['id']
             return jsonify(data)
         else:
             abort(resp.status_code)

@@ -3,8 +3,6 @@ from flask_restful import Resource, Api, reqparse
 
 import requests
 
-from resources.service import serviceId
-
 SERVICEID = '175'
 API_PATH = 'http://charette15.ing.puc.cl/api'
 
