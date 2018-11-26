@@ -135,8 +135,46 @@ class PersonMessagesCollection(Resource):
         else:
             abort(resp.status_code)
 
+class PersonSubscriptionCollection(Resource):
+    API_PATH_TOPICS = API_PATH + '{}'.format('/topics')
+    API_PATH_CREATE = API_PATH + '{}'.format('/topics/{}/subscribers')
 
+    def __init__(self):
+        self.reqparse= reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'postId',
+            required=True,
+            help= 'No postId provided',
+            location=['form', 'json',]
+        )
+        super().__init__()
 
+    def get(self, _id):
+        token = request.args.get('access_token','')
+        resp = requests.get(self.API_PATH_TOPICS, headers={'Authorization': 'Bearer ' + token})
+        if resp.status_code == 200:
+            posts = list(filter(lambda x: _id in list(map(lambda i: i["user_id"], x['subscribers'])), resp.json()))
+            for post in posts:
+                post['postId'] = post['topic_id']
+                post['notification'] = False
+                post['personId'] = _id
+                post['id'] = 0
+            return jsonify(posts)
+        else:
+            abort(resp.status_code)
+
+    def post(self, _id):
+        token = request.args.get('access_token','')
+        args = self.reqparse.parse_args()
+        data = {
+            'user_id': _id,
+            'topic_identifier': int(args['postId'])
+        }
+        resp = requests.post(self.API_PATH_CREATE.format(int(args['postId'])), data=data, headers={'Authorization': 'Bearer ' + token})
+        if resp.status_code == 200:
+            return jsonify(resp.json())
+        else:
+            abort(resp.status_code)
 
 g3_person_api = Blueprint('resources_g3.people', __name__)
 
@@ -146,6 +184,4 @@ api.add_resource(PersonLogin, '/people/login')
 api.add_resource(PersonId, '/people/<int:_id>')
 api.add_resource(PersonPostCollection, '/people/<int:_id>/posts')
 api.add_resource(PersonMessagesCollection, '/people/<int:_id>/messages')
-
-
-
+api.add_resource(PersonSubscriptionCollection, '/people/<int:_id>/subscriptions')
