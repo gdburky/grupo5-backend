@@ -74,6 +74,7 @@ class PostMessages(Resource):
                 item = requests.get(API_PATH + '/posts/{}'.format(message['post_id']),
                                    headers={'Authorization': 'Bearer ' + token})
                 if item.status_code == 200:
+
                     item = item.json()
                     item['description'] = item['content']
                     item['id'] = item['post_id']
@@ -99,9 +100,9 @@ class PostMessages(Resource):
                 resp1 = requests.post(self.API_PATH_PM.format(_id), data=data, headers={'Authorization': 'Bearer ' + token})
                 if resp1.status_code == 200:
                     message = resp1.json()
-                    message['description'] = args['content']
+                    message['description'] = args['description']
                     message['postId'] = _id
-                    message['personId'] = data['user_id']
+                    message['personId'] = user.json()['id']
                     message['id'] = message['post_id']
                     return jsonify(message)
                 else:
