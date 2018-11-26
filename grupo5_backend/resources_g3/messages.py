@@ -3,7 +3,7 @@ from flask_restful import Resource, Api, reqparse
 
 import requests
 
-API_PATH_G3 = 'http://charette9.ing.puc.cl/api'
+API_PATH_G3 = 'https://charette9.ing.puc.cl/api'
 
 
 class Message(Resource):
@@ -85,10 +85,10 @@ class MessagesResponsesCollection(Resource):
         token = request.args.get('access_token','')
         user = requests.get(API_PATH_G3 + '/user', headers={'Authorization': 'Bearer ' + token})
         argsG3['user_id'] = user.json()['id']
+        argsG3['post_identifier'] = id_
         resp = requests.post(self.API_PATH_MRC_G3.format(id_), data=argsG3, headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
             message = resp.json()
-            message = message[0]
             message['description'] = argsG3['content']
             message['id'] = message['answer_id']
             message['messageId'] = id_
