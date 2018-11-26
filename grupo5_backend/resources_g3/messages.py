@@ -88,6 +88,7 @@ class MessagesResponsesCollection(Resource):
         resp = requests.post(self.API_PATH_MRC_G3.format(id_), data=argsG3, headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
             message = resp.json()
+            message = message[0]
             message['description'] = argsG3['content']
             message['id'] = message['answer_id']
             message['messageId'] = id_
