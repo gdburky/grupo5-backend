@@ -3,7 +3,7 @@ from flask_restful import Resource, Api, reqparse
 
 import requests
 
-from resources.service import serviceId
+# from resources.service import serviceId
 
 API_PATH = 'http://charette15.ing.puc.cl/api'
 
@@ -15,7 +15,7 @@ class ResponseCollection(Resource):
         resp = requests.get(self.API_PATH_RC)
         if resp.status_code == 200:
             return jsonify(resp.json())
-        else: 
+        else:
             abort(resp.status_code)
 
 class Response(Resource):
@@ -28,7 +28,7 @@ class Response(Resource):
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
-    
+
     def delete(self, id_):
         resp = requests.delete(self.API_PATH_R.format(id_))
         if resp.status_code == 200:
@@ -54,7 +54,7 @@ class ResponseCollectionCreate(Resource):
         resp = requests.get(self.API_PATH_R_CREATE.format(msgId), params={'access_token': token})
         if resp.status_code == 200:
             return jsonify(resp.json())
-        else: 
+        else:
             abort(resp.status_code)
 
     def post(self, msgId):
@@ -71,6 +71,6 @@ class ResponseCollectionCreate(Resource):
 responses_api = Blueprint('resources.responses', __name__)
 
 api = Api(responses_api)
-api.add_resource(ResponseCollection, '/responses')
-api.add_resource(Response, '/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
-api.add_resource(ResponseCollectionCreate, '/messages/<int:msgId>/responses')
+#api.add_resource(ResponseCollection, '/responses')
+#api.add_resource(Response, '/posts/<int:postId>/messages/<int:msgId>/responses/<int:id_>')
+#api.add_resource(ResponseCollectionCreate, '/messages/<int:msgId>/responses')
