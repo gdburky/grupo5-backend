@@ -34,7 +34,7 @@ class Post(Resource):
                 post['content'] = post['description']
                 post['author_name'] = ""
                 post['author_id'] = 0
-                post['post_id'] = post['topic_identifier']
+                post['post_id'] = post['topic_id']
                 posts.append(post)
             return jsonify(posts)
         else:
@@ -46,8 +46,8 @@ class Post(Resource):
         print(args)
         args['description'] = args['content']
         args['title'] = args['title']
-        resp = requests.post(self.API_PATH_P, headers={'Authorization': 'Bearer ' + token})
-        if resp.status_code == 201:
+        resp = requests.post(self.API_PATH_P, data=args,headers={'Authorization': 'Bearer ' + token})
+        if resp.status_code == 200 or resp.status_code == 201:
             
             return jsonify(resp.json())
         else:
@@ -59,9 +59,9 @@ class PostMessages(Resource):
     def __init__(self):
         self.reqparse= reqparse.RequestParser()
         self.reqparse.add_argument(
-            'description',
+            'content',
             required=True,
-            help= 'No description provided',
+            help= 'No content provided',
             location=['form', 'json',]
         )
         super().__init__()
@@ -78,8 +78,10 @@ class PostMessages(Resource):
                     item = item.json()
                     print(item)
                     item['content'] = item['content']
-                    item['postId'] = item['post_id']
-                    item['personId'] = _id
+                    item['message_id'] = item['post_id']
+                    item['author_id'] = item['user_id']
+                    item['author_name'] = ""
+                    item['published_at'] = item['pub_date']
                     messages.append(item)
                 else:
                     abort(item.status_code)
@@ -90,16 +92,24 @@ class PostMessages(Resource):
 
     def post(self, _id):
         token = request.args.get('access_token','')
-        user = requests.post(API_PATH + '/user', headers={'Authorization': 'Bearer ' + token})
+        user = requests.get(API_PATH + '/user', headers={'Authorization': 'Bearer ' + token})
+        print(user.json())
         if user.status_code == 200:
             args = self.reqparse.parse_args()
-            data = {'user_id': user.json()['id'],'content': args['description']}
+            data = {'user_id': user.json()['id'],'content': args['content']}
             resp = requests.post(API_PATH + '/posts',data=data, headers={'Authorization': 'Bearer ' + token})
+            print(resp.json())
             if resp.status_code == 200:
-                data = {'topic_identifier': _id, 'post_id': resp.json()['id']}
+                data = {'topic_identifier': _id, 'post_id': resp.json()['post_id']}
                 resp1 = requests.post(self.API_PATH_PM.format(_id), data=data, headers={'Authorization': 'Bearer ' + token})
                 if resp1.status_code == 200:
-                    return jsonify(resp1.json())
+                    message = resp1.json()
+                    message['message_id'] = message['post_id']
+                    message['published_at'] = ""
+                    message['author_name'] = user.json()['username']
+                    message['author_id'] = user.json()['id']
+                    message['content'] = args['content']
+                    return jsonify(message)
                 else:
                     abort(resp1.status_code)
             else:
@@ -114,6 +124,11 @@ class PostId(Resource):
         token = request.args.get('access_token','')
         resp = requests.get(self.API_PATH_PI.format(_id), headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
+            post = resp.json()
+            post['content'] = post['description']
+            post['author_name'] = ""
+            post['author_id'] = 0
+            post['post_id'] = post['topic_id']
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
