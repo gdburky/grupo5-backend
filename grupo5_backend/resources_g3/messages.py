@@ -45,17 +45,28 @@ class MessagesResponsesCollection(Resource):
         token = request.args.get('access_token','')
         resp = requests.get(self.API_PATH_MRC_G3.format(id_), headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
+            messages = []
+            print(resp.json())
+            for message in resp.json():
+                item = requests.get(self.API_PATH_MRC_G3+'/{}'.format(id_, message['answer_id']),
+                                   headers={'Authorization': 'Bearer ' + token})
+                if item.status_code == 200:
+                    item = item.json()
+                    item = item[0]
+                    item['content'] = item['content']
+                    item['reply_id'] = item['answer_id']
+                    item['author_id'] = item['user_id']
+                    item['author_name'] = ""
+                    item['published_at'] = item['pub_date']
+                    messages.append(item)
+                else:
+                    abort(item.status_code)
 
-            for answer in resp:
-                item = requests.get(API_PATH_MRC_G3 + '/posts/{}'.format(answer['post_id']),
-                               headers={'Authorization': 'Bearer ' + token})
-
-                answer['description'] = answer['content']
-                answer['messageId'] = answer['post_id']
-                answer['author_id'] = item['user_id']
-            return jsonify(resp)
+            return jsonify(messages)
         else:
             abort(resp.status_code)
+
+
 
     def post(self, id_):
         args = self.reqparse.parse_args()
@@ -64,13 +75,18 @@ class MessagesResponsesCollection(Resource):
         argsG3 = args.copy()
         argsG3['content'] = argsG3['description']
         token = request.args.get('access_token','')
+        user = requests.get(API_PATH_G3 + '/user', headers={'Authorization': 'Bearer ' + token})
         resp = requests.post(self.API_PATH_MRC_G3.format(id_), data=argsG3, headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
-            # Aqui tambien falta personId
-            resp = resp.json()
-            resp['description'] = resp['content']
-            resp['messageId'] = resp['post_id']
-            return jsonify(resp)
+            message = resp.json()
+            print(message)
+            message = message[0]
+            message['reply_id'] = message['answer_id']
+            message['published_at'] = ""
+            message['author_name'] = user.json()['username']
+            message['author_id'] = user.json()['id']
+            message['content'] = argsG3['description']
+            return jsonify(message)
         else:
             abort(resp.status_code)
 
