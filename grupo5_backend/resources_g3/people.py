@@ -23,16 +23,12 @@ class PersonRegister(Resource):
             help= 'No password provided',
             location=['form', 'json',]
         )
-        self.reqparse.add_argument(
-            'username',
-            required=True,
-            help= 'No username provided',
-            location=['form', 'json',]
-        )
         super().__init__()
 
     def post(self):
         args = self.reqparse.parse_args()
+        username = args['email'][0:args['email'].find("@")]
+        args['username'] = username
         print(args)
         resp = requests.post(self.API_PATH_PR, data=args)
         print(resp.status_code)
