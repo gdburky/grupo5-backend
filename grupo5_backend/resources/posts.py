@@ -136,20 +136,9 @@ class PostSubscriptionCollection(Resource):
 class PostFilter(Resource):
     API_PATH_PHC = API_PATH + '{}'.format('/services/{}/filterPosts/{}')
 
-    def __init__(self):
-        self.reqparse= reqparse.RequestParser()
-        self.reqparse.add_argument(
-            'hashtag',
-            required=True,
-            help= 'No hashtag provided',
-            location=['form', 'json',]
-        )
-        super().__init__()
-
     def get(self, string_):
         params = request.args.get('access_token','')
-        args = self.reqparse.parse_args()
-        resp = requests.get(self.API_PATH_PHC.format(SERVICEID, string_), data=args, params={'access_token': params})
+        resp = requests.get(self.API_PATH_PHC.format(SERVICEID, string_), params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
