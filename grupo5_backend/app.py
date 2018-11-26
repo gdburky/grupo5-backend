@@ -7,6 +7,7 @@ from resources.responses import responses_api
 from resources.subscriptions import subscriptions_api
 from resources_g3.people import g3_person_api
 from resources_g3.posts import g3_posts_api
+from resources_g3.messages import g3_messages_api
 
 # Flask settings
 FLASK_SERVER_NAME = '0.0.0.0'
@@ -22,6 +23,7 @@ app.register_blueprint(messages_api, url_prefix='/api')
 
 app.register_blueprint(g3_person_api, url_prefix='/api/g3')
 app.register_blueprint(g3_posts_api, url_prefix='/api/g3')
+app.register_blueprint(g3_messages_api, url_prefix='/api/g3')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=FLASK_DEBUG, port=5000)

@@ -48,7 +48,7 @@ class Post(Resource):
         args['title'] = args['title']
         resp = requests.post(self.API_PATH_P, data=args,headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200 or resp.status_code == 201:
-            
+
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
