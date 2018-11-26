@@ -12,9 +12,15 @@ class Post(Resource):
     def __init__(self):
         self.reqparse= reqparse.RequestParser()
         self.reqparse.add_argument(
-            'description',
+            'content',
             required=True,
-            help= 'No description provided',
+            help= 'No content provided',
+            location=['form', 'json',]
+        )
+        self.reqparse.add_argument(
+            'title',
+            required=True,
+            help= 'No title provided',
             location=['form', 'json',]
         )
         super().__init__()
@@ -23,16 +29,25 @@ class Post(Resource):
         token = request.args.get('access_token','')
         resp = requests.get(self.API_PATH_P, headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200:
-            return jsonify(resp.json())
+            posts = []
+            for post in resp.json():
+                post['content'] = post['description']
+                post['author_name'] = ""
+                post['author_id'] = 0
+                posts.append(post)
+            return jsonify(posts)
         else:
             abort(resp.status_code)
 
     def post(self):
         token = request.args.get('access_token','')
         args = self.reqparse.parse_args()
-        args['title'] = args['description']
+        print(args)
+        args['description'] = args['content']
+        args['title'] = args['title']
         resp = requests.post(self.API_PATH_P, headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 201:
+            
             return jsonify(resp.json())
         else:
             abort(resp.status_code)
@@ -56,12 +71,13 @@ class PostMessages(Resource):
         if resp.status_code == 200:
             messages = []
             for message in resp.json():
-                item = request.get(API_PATH + '/posts/{}'.format(message['id']),
+                item = requests.get(API_PATH + '/posts/{}'.format(message['post_id']),
                                    headers={'Authorization': 'Bearer ' + token})
                 if item.status_code == 200:
                     item = item.json()
-                    item['description'] = item['content']
-                    item['postId'] = item['id']
+                    print(item)
+                    item['content'] = item['content']
+                    item['postId'] = item['post_id']
                     item['personId'] = _id
                     messages.append(item)
                 else:
