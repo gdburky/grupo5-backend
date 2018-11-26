@@ -95,20 +95,9 @@ class MessagesResponsesCollection(Resource):
 class MessagesFilter(Resource):
     API_PATH_MHC = API_PATH + '{}'.format('/services/{}/filterMessages/{}')
 
-    def __init__(self):
-        self.reqparse= reqparse.RequestParser()
-        self.reqparse.add_argument(
-            'hashtag',
-            required=True,
-            help= 'No hashtag provided',
-            location=['form', 'json',]
-        )
-        super().__init__()
-
     def get(self, string_):
         params = request.args.get('access_token','')
-        args = self.reqparse.parse_args()
-        resp = requests.get(self.API_PATH_MHC.format(SERVICEID, string_), data=args, params={'access_token': params})
+        resp = requests.get(self.API_PATH_MHC.format(SERVICEID, string_), params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
         else:
