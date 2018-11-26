@@ -34,6 +34,7 @@ class Post(Resource):
                 post['content'] = post['description']
                 post['author_name'] = ""
                 post['author_id'] = 0
+                post['post_id'] = post['topic_identifier']
                 posts.append(post)
             return jsonify(posts)
         else:

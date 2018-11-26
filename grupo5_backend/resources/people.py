@@ -38,6 +38,7 @@ class PersonRegister(Resource):
 
     def post(self):
         token = getAccessToken(LOGIN_DATA)
+        print(token)
         args = self.reqparse.parse_args()
         resp = requests.post(self.API_PATH_PR.format(SERVICEID), data=args, params={'access_token': token})
         if resp.status_code == 200:
