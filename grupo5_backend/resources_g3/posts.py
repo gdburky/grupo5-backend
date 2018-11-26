@@ -12,9 +12,9 @@ class Post(Resource):
     def __init__(self):
         self.reqparse= reqparse.RequestParser()
         self.reqparse.add_argument(
-            'content',
+            'description',
             required=True,
-            help= 'No content provided',
+            help= 'No description provided',
             location=['form', 'json',]
         )
         self.reqparse.add_argument(
@@ -44,7 +44,7 @@ class Post(Resource):
         token = request.args.get('access_token','')
         args = self.reqparse.parse_args()
         print(args)
-        args['description'] = args['content']
+        args['description'] = args['description']
         args['title'] = args['title']
         resp = requests.post(self.API_PATH_P, data=args,headers={'Authorization': 'Bearer ' + token})
         if resp.status_code == 200 or resp.status_code == 201:
