@@ -17,6 +17,12 @@ class PostCollection(Resource):
             help= 'No description provided',
             location=['form', 'json',]
         )
+        self.reqparse.add_argument(
+            'title',
+            required=True,
+            help= 'No title provided',
+            location=['form', 'json',]
+        )
         super().__init__()
 
     def get(self):
@@ -30,6 +36,7 @@ class PostCollection(Resource):
     def post(self):
         params = request.args.get('access_token','')
         args = self.reqparse.parse_args()
+        print(args)
         resp = requests.post(self.API_PATH_PC.format(SERVICEID), data=args, params={'access_token': params})
         if resp.status_code == 200:
             return jsonify(resp.json())
