@@ -54,6 +54,7 @@ class MessagesResponsesCollection(Resource):
                 message['id'] = message['answer_id']
                 message['messageId'] = id_
                 message['personId'] = message['user_id']
+                messages.append(message)
                 '''
                 item = requests.get(self.API_PATH_MRC_G3+'/{}'.format(id_, message['answer_id']),
                                    headers={'Authorization': 'Bearer ' + token})
