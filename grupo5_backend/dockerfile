@@ -1,9 +1,12 @@
-FROM ubuntu:latest
-COPY . /app
-WORKDIR /app
-RUN apt-get update -y
-RUN apt-get install -y python3-pip python3-dev build-essential
-RUN pip3 install -r requirements.txt
-EXPOSE 5000
-ENTRYPOINT ["python3"]
-CMD ["app.py"]
+FROM tiangolo/uwsgi-nginx-flask:python3.6
+
+RUN rm /app/prestart.sh
+
+
+COPY requirements.txt /tmp/
+RUN pip install -U pip
+RUN pip install -r /tmp/requirements.txt
+
+COPY ./app.py /app/main.py
+COPY ./resources /app/resources
+COPY ./resources_g3 /app/resources_g3
